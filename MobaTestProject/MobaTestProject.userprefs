@@ -1,8 +1,14 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\BaseUnit.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\miniMoba\MiniMOBA-master\Assets\Scripts\CreepAI.cs">
     <Files>
-      <File FileName="Assets\Scripts\BaseUnit.cs" Line="49" Column="26" />
+      <File FileName="Assets\Scripts\Units\AIs\HeroBehavior.cs" Line="347" Column="3" />
+      <File FileName="Assets\Scripts\GameSetup.cs" Line="82" Column="177" />
+      <File FileName="..\..\..\miniMoba\MiniMOBA-master\Assets\Scripts\Hero.cs" Line="90" Column="4" />
+      <File FileName="Assets\Scripts\MovementControl.cs" Line="232" Column="3" />
+      <File FileName="Assets\Scripts\Units\AIs\MinionBehaviour.cs" Line="152" Column="60" />
+      <File FileName="..\..\..\miniMoba\MiniMOBA-master\Assets\Scripts\CreepAI.cs" Line="53" Column="20" />
+      <File FileName="..\..\..\miniMoba\MiniMOBA-master\Assets\Scripts\Character.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

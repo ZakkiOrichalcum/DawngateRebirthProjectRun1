@@ -1,0 +1,399 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class BaseUnit
+{
+	private string name;
+	private string type;
+	private int charID;
+	private Transform owner;
+	private float nextAttackTime;
+
+	//Stats
+	private int level;
+	private int baseHealth;
+	private double currentHealth;
+	private double maxHealth;
+	private int healthPerLevel;
+	private double healthRegen;
+	private int baseAttack;
+	private int attack;
+	private int attackPerLevel;
+	private float baseAttackSpeed;
+	private float attackSpeed;
+	private float attackSpeedPerLevel;
+	private int baseArmor;
+	private int armor;
+	private int armorPerLevel;
+	private int baseMagicResist;
+	private int magicResist;
+	private int magicResistPerLevel;
+	private int attackRange;
+	private int baseMovementSpeed;
+	private int movementSpeed;
+	private int power;
+	private float powerRatio;
+	private int haste;
+	private int additionalHealth;
+	private int additionalArmor;
+	private int additionalMagicResist;
+	private int additionalMovementSpeed;
+	private float cooldown;
+	private float cooldownRatio;
+	private float attackspeedRatio;
+	private float movementspeedRatio;
+	private int currentXP;
+	private int currentGold;
+	private double basexp;
+	private double xpPerLevel;
+	private double xpReward;
+	private double baseMoney;
+	private double moneyPerLevel;
+	private double moneyReward;
+
+	//Abilities and Skills
+	private SkillData[] abilities;
+
+	//Effects
+	public List<Effect> buffEffects;
+	public List<Effect> onHitEffects;
+	public List<Effect> timedEffects;
+	public List<Effect> onSpellDamageEffects;
+
+	//bools
+	private bool dead;
+
+	public BaseUnit( string n, Transform own, string t, double hp, int hpPer, double hpRegen, int a, int aPer, float atkspd, float atkspdPer, int arm, int armPer, 
+	                int mr, int mrPer, int atkrnge, int ms, float pwrRatio, float cdRatio, float asRatio, float msRatio )
+	{
+		name = n;
+		type = t;
+		owner = own;
+		level = 1;
+		baseHealth = (int)hp;
+		currentHealth = maxHealth = hp;
+		healthPerLevel = hpPer;
+		healthRegen = hpRegen;
+		baseAttack = attack = a;
+		attackPerLevel = aPer;
+		baseAttackSpeed = attackSpeed = atkspd;
+		attackSpeedPerLevel = atkspdPer;
+		baseArmor = armor = arm;
+		armorPerLevel = armPer;
+		baseMagicResist = magicResist = mr;
+		magicResistPerLevel = mrPer;
+		attackRange = atkrnge;
+		baseMovementSpeed = movementSpeed = ms;
+		dead = false;
+		Power = Haste = AdditionalArmor = AdditionalHealth = AdditionalMagicResist = AdditionalMovementSpeed = 0;
+		cooldown = 0f;
+		powerRatio = pwrRatio;
+		cooldownRatio = cdRatio;
+		attackspeedRatio = asRatio;
+		movementspeedRatio = msRatio;
+		buffEffects = new List<Effect>();
+		onHitEffects = new List<Effect>();
+		timedEffects = new List<Effect>();
+		onSpellDamageEffects = new List<Effect>();
+	}
+
+	//Getter/Setter Methods
+	public string Name
+	{
+		get{return name;}
+		set{name = value;}
+	}
+
+	public string Type
+	{
+		get{return type;}
+		set{type = value;}
+	}
+
+	public int CharID
+	{
+		get{return charID;}
+		set{charID = value;}
+	}
+
+	public Transform Owner
+	{
+		get{return owner;}
+		set{owner = value;}
+	}
+
+	public int Level
+	{
+		get{return level;}
+		set{level = value;}
+	}
+
+	public int BaseHealth
+	{
+		get{return baseHealth;}
+		set{baseHealth = value;}
+	}
+
+	public double MaxHealth
+	{
+		get{return maxHealth;}
+		set{maxHealth = value;}
+	}
+	
+	public double CurrentHealth
+	{
+		get{return currentHealth;}
+		set{currentHealth = value;}
+	}
+
+	public int HealthPerLevel
+	{
+		get{return healthPerLevel;}
+		set{healthPerLevel = value;}
+	}
+
+	public double HealthRegen
+	{
+		get{return healthRegen;}
+		set{healthRegen = value;}
+	}
+
+	public int BaseAttack
+	{
+		get{return baseAttack;}
+		set{baseAttack = value;}
+	}
+
+	public int Attack
+	{
+		get{return attack;}
+		set{attack = value;}
+	}
+
+	public int AttackPerLevel
+	{
+		get{return attackPerLevel;}
+		set{attackPerLevel = value;}
+	}
+	
+	public int BaseArmor
+	{
+		get{return baseArmor;}
+		set{baseArmor = value;}
+	}
+
+	public int Armor
+	{
+		get{return armor;}
+		set{armor = value;}
+	}
+
+	public int ArmorPerLevel
+	{
+		get{return armorPerLevel;}
+		set{armorPerLevel = value;}
+	}
+	
+	public int BaseMagicResist
+	{
+		get{return baseMagicResist;}
+		set{baseMagicResist = value;}
+	}
+
+	public int MagicResist
+	{
+		get{return magicResist;}
+		set{magicResist = value;}
+	}
+
+	public int MagicResistPerLevel
+	{
+		get{return magicResistPerLevel;}
+		set{magicResistPerLevel = value;}
+	}
+
+	public float BaseAttackSpeed
+	{
+		get{return baseAttackSpeed;}
+		set{baseAttackSpeed = value;}
+	}
+
+	public float AttackSpeed
+	{
+		get{return attackSpeed;}
+		set{attackSpeed = value;}
+	}
+
+	public float AttackSpeedPerLevel
+	{
+		get{return attackSpeedPerLevel;}
+		set{attackSpeedPerLevel = value;}
+	}
+
+	public float NextAttackTime
+	{
+		get{return nextAttackTime;}
+		set{nextAttackTime = value;}
+	}
+	
+	public int BaseMovementSpeed
+	{
+		get{return baseMovementSpeed;}
+		set{baseMovementSpeed = value;}
+	}
+
+	public int MovementSpeed
+	{
+		get{return movementSpeed;}
+		set{movementSpeed = value;}
+	}
+
+	public int AttackRange
+	{
+		get{return attackRange;}
+		set{attackRange = value;}
+	}
+
+	public int Power
+	{
+		get{return power;}
+		set{power = value;}
+	}
+	public float PowerRatio
+	{
+		get{return powerRatio;}
+		set{powerRatio = value;}
+	}
+	public int Haste
+	{
+		get{return haste;}
+		set{haste = value;}
+	}
+	public int AdditionalHealth
+	{
+		get{return additionalHealth;}
+		set{additionalHealth = value;}
+	}
+	public int AdditionalArmor
+	{
+		get{return additionalArmor;}
+		set{additionalArmor = value;}
+	}
+	public int AdditionalMagicResist
+	{
+		get{return additionalMagicResist;}
+		set{additionalMagicResist = value;}
+	}
+	public int AdditionalMovementSpeed
+	{
+		get{return additionalMovementSpeed;}
+		set{additionalMovementSpeed = value;}
+	}
+	public float Cooldown
+	{
+		get{return cooldown;}
+		set{cooldown = value;}
+	}
+	public float CooldownRatio
+	{
+		get{return cooldownRatio;}
+		set{cooldownRatio = value;}
+	}
+	public float AttackspeedRatio
+	{
+		get{return attackspeedRatio;}
+		set{attackspeedRatio = value;}
+	}
+	public float MovementspeedRatio
+	{
+		get{return movementspeedRatio;}
+		set{movementspeedRatio = value;}
+	}
+	
+	public int CurrentXP
+	{
+		get{return currentXP;}
+		set{currentXP = value;}
+	}
+	
+	public int CurrentGold
+	{
+		get{return currentGold;}
+		set{currentGold = value;}
+	}
+	
+	public bool Dead
+	{
+		get{return dead;}
+		set{dead = value;}
+	}
+
+	public double BaseXp
+	{
+		get{return basexp;}
+		set{basexp = value;}
+	}
+
+	public double XpPerLevel
+	{
+		get{return xpPerLevel;}
+		set{xpPerLevel = value;}
+	}
+	
+	public double XpReward
+	{
+		get{return xpReward;}
+		set{xpReward = value;}
+	}
+	
+	public double BaseMoney
+	{
+		get{return baseMoney;}
+		set{baseMoney = value;}
+	}
+
+	public double MoneyPerLevel
+	{
+		get{return moneyPerLevel;}
+		set{moneyPerLevel = value;}
+	}
+	
+	public double MoneyReward
+	{
+		get{return moneyReward;}
+		set{moneyReward = value;}
+	}
+
+	public SkillData[] Abilities
+	{
+		get{return abilities;}
+		set{abilities = value;}
+	}
+
+	public virtual void StatisticCalculation( ) {}
+	public virtual void RegenAndPassives( ) {}
+
+	public void TakeDamage( double n )
+	{
+		CurrentHealth -= (int)n;
+		Debug.Log(Name + " took " + n + " damage. (" + CurrentHealth + "/" + MaxHealth + ")");
+		if( CurrentHealth <= 0 )
+		{
+			Dead = true;
+			Debug.Log(Name + " is dead.");
+		}
+	}
+
+	public void TakeHeal( double n )
+	{
+		CurrentHealth += (int)n;
+		if(CurrentHealth >= MaxHealth)
+		{
+			CurrentHealth = MaxHealth;
+			Debug.Log(Name + " was full healed. (" + CurrentHealth + "/" + MaxHealth + ")");
+		}
+		else
+			Debug.Log(Name + " was healed " + (int)n + " damage. (" + CurrentHealth + "/" + MaxHealth + ")");
+	}
+}
