@@ -1,8 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\miniMoba\MiniMOBA-master\Assets\Scripts\CreepAI.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Units\AIs\HeroBehavior.cs">
     <Files>
-      <File FileName="Assets\Scripts\Units\AIs\HeroBehavior.cs" Line="347" Column="3" />
+      <File FileName="Assets\Scripts\Units\AIs\HeroBehavior.cs" Line="245" Column="7" />
       <File FileName="Assets\Scripts\GameSetup.cs" Line="82" Column="177" />
       <File FileName="..\..\..\miniMoba\MiniMOBA-master\Assets\Scripts\Hero.cs" Line="90" Column="4" />
       <File FileName="Assets\Scripts\MovementControl.cs" Line="232" Column="3" />

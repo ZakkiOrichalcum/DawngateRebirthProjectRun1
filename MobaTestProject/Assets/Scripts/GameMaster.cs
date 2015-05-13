@@ -60,7 +60,7 @@ public class GameMaster : MonoBehaviour {
 		Transform newPlayerTransform = (Transform)Network.Instantiate (Resources.Load(s), position, transform.rotation, playerNumber);
 		newPlayerTransform.GetComponent<UnitInfo>().Info.CharID = charNumber++;
 		playerScripts.Add (newPlayerTransform.GetComponent<HeroBehavior> ());
-		NetworkView theNetworkView = newPlayerTransform.networkView;
+		NetworkView theNetworkView = newPlayerTransform.GetComponent<NetworkView>();
 		theNetworkView.RPC ("SetPlayer", RPCMode.AllBuffered, player);
 	}
 	

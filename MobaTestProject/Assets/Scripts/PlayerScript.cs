@@ -229,7 +229,7 @@ public class PlayerScript : MonoBehaviour {
 
 	private Collider FindClosestCollider( Collider[] list, Vector3 pos )
 	{
-		float minDist = 500000f; Collider output = hero.collider;
+		float minDist = 500000f; Collider output = hero.GetComponent<Collider>();
 		foreach(Collider c in list)
 		{
 			float dist = Vector3.Distance(c.transform.position, pos);

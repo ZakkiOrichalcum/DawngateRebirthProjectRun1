@@ -329,7 +329,7 @@ public class HeroBehavior : Photon.MonoBehaviour
 	
 	private Collider FindClosestCollider( Collider[] list, Vector3 pos )
 	{
-		float minDist = 500000f; Collider output = collider;
+		float minDist = 500000f; Collider output = GetComponent<Collider>();
 		foreach(Collider c in list)
 		{
 			float dist = Vector3.Distance(c.transform.position, pos);
