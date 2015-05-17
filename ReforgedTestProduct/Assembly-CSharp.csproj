@@ -156,15 +156,8 @@
      <Compile Include="Assets\Photon Unity Networking\UtilityScripts\TimeKeeper.cs" />
      <Compile Include="Assets\Scripts\GameSetup.cs" />
      <Compile Include="Assets\Scripts\HeroController.cs" />
-     <Compile Include="Assets\Scripts\MinionController.cs" />
-     <Compile Include="Assets\Scripts\PoolManager.cs" />
-     <Compile Include="Assets\Scripts\SightController.cs" />
-     <Compile Include="Assets\Scripts\SightControllerStationary.cs" />
-     <Compile Include="Assets\Scripts\TargetedProjectileController.cs" />
-     <Compile Include="Assets\Scripts\TowerController.cs" />
      <Compile Include="Assets\Scripts\Unit.cs" />
      <Compile Include="Assets\Scripts\UnitMovement.cs" />
-     <Compile Include="Assets\Scripts\UnitStationary.cs" />
      <None Include="Assets\Plugins\Photon3Unity3D.xml" />
      <None Include="Assets\Photon Unity Networking\Demos\MarcoPolo-Tutorial\marcopolo-readme.txt" />
      <None Include="Assets\Plugins\release_history.txt" />
@@ -176,7 +169,7 @@
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="Photon3Unity3D">
- <HintPath>C:/Users/John/Documents/GitHub/DawngateRebirthProjectRun1/ReforgedTestProduct/Assets/Plugins/Photon3Unity3D.dll</HintPath>
+ <HintPath>C:/Users/John/Documents/ReforgedTestProduct/Assets/Plugins/Photon3Unity3D.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iossupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>

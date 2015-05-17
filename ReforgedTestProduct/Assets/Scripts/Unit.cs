@@ -6,7 +6,6 @@ public class Unit : MonoBehaviour {
 	private string unitName;
 	private string type;
 	private int charID;
-	private string team;
 	private float nextAttackTime;
 	
 	//Stats
@@ -18,16 +17,16 @@ public class Unit : MonoBehaviour {
 	private double healthRegen;
 	private int baseAttack;
 	private int attack;
-	private double attackPerLevel;
+	private int attackPerLevel;
 	private float baseAttackSpeed;
 	private float attackSpeed;
 	private float attackSpeedPerLevel;
 	private int baseArmor;
 	private int armor;
-	private double armorPerLevel;
+	private int armorPerLevel;
 	private int baseMagicResist;
 	private int magicResist;
-	private double magicResistPerLevel;
+	private int magicResistPerLevel;
 	private int attackRange;
 	private int baseMovementSpeed;
 	private int movementSpeed;
@@ -63,13 +62,12 @@ public class Unit : MonoBehaviour {
 	//bools
 	private bool dead;
 	
-	public void Init( string n, string t, string tm, int l, double hp, int hpPer, double hpRegen, int a, double aPer, float atkspd, float atkspdPer, int arm, double armPer, 
-	                 int mr, double mrPer, int atkrnge, int ms, float pwrRatio, float cdRatio, float asRatio, float msRatio, double x, double xPer, double m, double mPer )
+	public void Init( string n, string t, double hp, int hpPer, double hpRegen, int a, int aPer, float atkspd, float atkspdPer, int arm, int armPer, 
+	                 int mr, int mrPer, int atkrnge, int ms, float pwrRatio, float cdRatio, float asRatio, float msRatio )
 	{
 		unitName = n;
 		type = t;
-		team = tm;
-		level = l;
+		level = 1;
 		baseHealth = (int)hp;
 		currentHealth = maxHealth = hp;
 		healthPerLevel = hpPer;
@@ -82,7 +80,7 @@ public class Unit : MonoBehaviour {
 		armorPerLevel = armPer;
 		baseMagicResist = magicResist = mr;
 		magicResistPerLevel = mrPer;
-		attackRange = atkrnge/100;
+		attackRange = atkrnge;
 		baseMovementSpeed = movementSpeed = ms;
 		dead = false;
 		Power = Haste = AdditionalArmor = AdditionalHealth = AdditionalMagicResist = AdditionalMovementSpeed = 0;
@@ -91,15 +89,10 @@ public class Unit : MonoBehaviour {
 		cooldownRatio = cdRatio;
 		attackspeedRatio = asRatio;
 		movementspeedRatio = msRatio;
-		basexp = xpReward = x;
-		xpPerLevel = xPer;
-		baseMoney = moneyReward = m;
-		moneyPerLevel = mPer;
 		//		buffEffects = new List<Effect>();
 		//		onHitEffects = new List<Effect>();
 		//		timedEffects = new List<Effect>();
 		//		onSpellDamageEffects = new List<Effect>();
-		StatisticCalculation();
 	}
 	
 	//Getter/Setter Methods
@@ -114,13 +107,7 @@ public class Unit : MonoBehaviour {
 		get{return type;}
 		set{type = value;}
 	}
-
-	public string Team
-	{
-		get{return team;}
-		set{team = value;}
-	}
-
+	
 	public int CharID
 	{
 		get{return charID;}
@@ -175,7 +162,7 @@ public class Unit : MonoBehaviour {
 		set{attack = value;}
 	}
 	
-	public double AttackPerLevel
+	public int AttackPerLevel
 	{
 		get{return attackPerLevel;}
 		set{attackPerLevel = value;}
@@ -193,7 +180,7 @@ public class Unit : MonoBehaviour {
 		set{armor = value;}
 	}
 	
-	public double ArmorPerLevel
+	public int ArmorPerLevel
 	{
 		get{return armorPerLevel;}
 		set{armorPerLevel = value;}
@@ -211,7 +198,7 @@ public class Unit : MonoBehaviour {
 		set{magicResist = value;}
 	}
 	
-	public double MagicResistPerLevel
+	public int MagicResistPerLevel
 	{
 		get{return magicResistPerLevel;}
 		set{magicResistPerLevel = value;}
@@ -255,8 +242,8 @@ public class Unit : MonoBehaviour {
 	
 	public int AttackRange
 	{
-		get{return attackRange * 100;}
-		set{attackRange = value/100;}
+		get{return attackRange;}
+		set{attackRange = value;}
 	}
 	
 	public int Power
@@ -381,8 +368,8 @@ public class Unit : MonoBehaviour {
 		MaxHealth = BaseHealth + HealthPerLevel*Level + AdditionalHealth;
 		CurrentHealth = temp*MaxHealth;
 		Attack = (int)(BaseAttack + AttackPerLevel*Level + Power*PowerRatio);
-		Armor = (int)(BaseArmor + ArmorPerLevel*Level + AdditionalArmor);
-		MagicResist = (int)(BaseMagicResist + MagicResistPerLevel*Level + AdditionalMagicResist);
+		Armor = BaseArmor + ArmorPerLevel*Level + AdditionalArmor;
+		MagicResist = BaseMagicResist + MagicResistPerLevel*Level + AdditionalMagicResist;
 		Cooldown = (float)((Haste * CooldownRatio)/100);
 		AttackSpeed = BaseAttackSpeed + AttackSpeedPerLevel*Level + Haste*AttackspeedRatio;
 		MovementSpeed = (int)(BaseMovementSpeed + Haste*MovementspeedRatio + AdditionalMovementSpeed);
@@ -391,10 +378,6 @@ public class Unit : MonoBehaviour {
 //		{
 //			e.Effects(this, Owner.transform);
 //		}
-
-		xpReward = (int)(basexp + xpPerLevel*level);
-		moneyReward = (int)(baseMoney + moneyPerLevel*level);
-
 	}
 	public void RegenAndPassives( ) 
 	{
@@ -405,24 +388,15 @@ public class Unit : MonoBehaviour {
 				CurrentHealth = MaxHealth;
 		}
 	}
-
-	public void Respawn( )
-	{
-		currentHealth = maxHealth;
-		StatisticCalculation();
-	}
 	
-	public void TakeDamage( Unit source )
+	public void TakeDamage( double n )
 	{
-		if(!Dead)
+		CurrentHealth -= (int)n;
+		Debug.Log(unitName + " took " + n + " damage. (" + CurrentHealth + "/" + MaxHealth + ")");
+		if( CurrentHealth <= 0 )
 		{
-			CurrentHealth -= (int)source.Attack;
-			Debug.Log("[" + Time.time + "] " + unitName + " took " + source.Attack + " damage from " + source.UnitName + ". (" + CurrentHealth + "/" + MaxHealth + ")");
-			if( CurrentHealth <= 0 )
-			{
-				Dead = true;
-				Debug.Log("[" + Time.time + "] " + unitName + " is dead.");
-			}
+			Dead = true;
+			Debug.Log(unitName + " is dead.");
 		}
 	}
 	

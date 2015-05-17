@@ -5,60 +5,33 @@ public class HeroController : Photon.MonoBehaviour
 {
 	Vector3 lastClientClick;
 	Vector3 serverCurrentClick;
+	bool clicked = false;
 	private Unit forgerInfo;
 	private UnitMovement uMovement;
+	private NavMeshAgent nav;
+	private Vector3 movement;
 	private Vector3 originalPos;
+	private Unit target;
 	private Vector3 posReceived = Vector3.zero;
+	private Vector3 velReceived = Vector3.zero;
 	private float rotReceived = 0f;
 	private string serializeCheck = "";
-
-	//key Codes
-//	private string attackMove = "a";
-//	private string stop = "s";
-//	private string ability1 = "q";
-//	private string ability2 = "w";
-//	private string ability3 = "e";
-//	private string ability4 = "r";
-	private string lockOnToggle = "y";
-
-	//Camera Controls
-	[SerializeField]
-	private Transform playerCamera;
-	private bool LockedOn = false;
-	private bool PermLockOn = true;
-	private float cameraSpeed = 0.5f;
-	private Rect cameraDown;
-	private Rect cameraUp;
-	private Rect cameraLeft;
-	private Rect cameraRight;
-	private float guiSize = 100f;
 
 	void Start ()
 	{
 		forgerInfo = GetComponent<Unit>();
-		forgerInfo.Init( "Hero", "Hero", tag, 1, 500.0, 5, 3.4, 54, 2, 1.5f, 0.5f, 16, 2, 15, 2, 200, 3, 0.2f, 0.8f,0.2f,0.5f, 150, 0, 300, 0 );
+		forgerInfo.Init( "Hero", "Hero", 500.0, 5, 3.4, 54, 2, 1.5f, 0.5f, 16, 2, 15, 2, 5, 3, 0.2f, 0.8f,0.2f,0.5f );
+		nav = GetComponent<NavMeshAgent> ();
 		uMovement = GetComponent<UnitMovement>();
-
-		playerCamera = Camera.main.transform;
-		cameraDown = new Rect(0,0,Screen.width, guiSize);
-		cameraUp = new Rect(0, Screen.height - guiSize, Screen.width, guiSize);
-		cameraLeft = new Rect(0, 0, guiSize, Screen.height);
-		cameraRight = new Rect(Screen.width - guiSize, 0, guiSize, Screen.height);
 	}
 	
 	void Awake ()
 	{
-		uMovement = GetComponent<UnitMovement>();
 		if (PhotonNetwork.isMasterClient) {
-			uMovement.OriginalPosition = transform.position;
+			originalPos = transform.position;
 		}
-		forgerInfo = GetComponent<Unit>();
-
-		playerCamera = Camera.main.transform;
-		cameraDown = new Rect(0,0,Screen.width, guiSize);
-		cameraUp = new Rect(0, Screen.height - guiSize, Screen.width, guiSize);
-		cameraLeft = new Rect(0, 0, guiSize, Screen.height);
-		cameraRight = new Rect(Screen.width - guiSize, 0, guiSize, Screen.height);
+		nav = GetComponent<NavMeshAgent> ();
+		uMovement = GetComponent<UnitMovement>();
 	}
 	
 	// Update is called once per frame
@@ -70,72 +43,73 @@ public class HeroController : Photon.MonoBehaviour
 			{
 				Debug.Log ("Clicked!");
 				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-				RaycastHit hit; LayerMask mask = 1 << 11;
+				RaycastHit hit; LayerMask mask = 1 << 8;
 				Vector3 click = lastClientClick; int hitID = gameObject.GetPhotonView().viewID;
-				GameObject hitGO = gameObject;
 
 				if (Physics.Raycast (ray, out hit, 200, mask))
 				{
 					click = hit.point;
-					hitGO = ClickedCollider( click );
+					hitID = ClickedCollider( click );
 				}
+				Debug.Log(hit.point.ToString() + ", " +  hit.collider.name);
+
 				if( lastClientClick != click )
 				{
 					lastClientClick = click;
-					hitID = hitGO.GetPhotonView().viewID;
-					if(hitID != photonView.viewID && hitGO.tag != gameObject.tag)
-						uMovement.U2UMMovementInput(lastClientClick, hitID, UnitMovement.MovementState.MOVEATTACK);
-					else
-						uMovement.U2UMMovementInput(lastClientClick, hitID, UnitMovement.MovementState.MOVE);
+					uMovement.C2UMMovementInput(lastClientClick, hitID, "MOVE");
+//					if(PhotonNetwork.isMasterClient)
+//					{
+//						SendMovementInput(click.x, click.y, click.z, hitID);
+//					}
+//					else if(PhotonNetwork.isNonMasterClientInRoom)
+//					{
+//						photonView.RPC("SendMovementInput", PhotonTargets.MasterClient, click.x, click.y, click.z, hitID);
+//					}
 				}
 			}
-			if(Input.GetKey(KeyCode.Space))
-			{
-				LockedOn = true;
-			}
-			else
-			{
-				LockedOn = false;
-			}
-			if(Input.GetKeyDown(lockOnToggle))
-			{
-				if(PermLockOn)
-					PermLockOn = false;
-				else
-					PermLockOn = true;
-			}
-
-//			if(Input.GetKey(KeyCode.LeftControl))
-//			{
-//				storedInput = "ctrl";
-//			}
-
-			//CameraControls
-			if(LockedOn || PermLockOn)
-			{
-				playerCamera.transform.position = new Vector3(transform.position.x, playerCamera.transform.position.y,transform.position.z - 10);
-			}
-			else
-			{
-				if(cameraDown.Contains(Input.mousePosition))
-					playerCamera.transform.Translate (0f, 0f, -cameraSpeed, Space.World);
-				if(cameraUp.Contains(Input.mousePosition))
-					playerCamera.transform.Translate (0f, 0f, cameraSpeed, Space.World);
-				if(cameraLeft.Contains(Input.mousePosition))
-					playerCamera.transform.Translate (-cameraSpeed, 0f, 0f, Space.World);
-				if(cameraRight.Contains(Input.mousePosition))
-					playerCamera.transform.Translate (cameraSpeed, 0f, 0f, Space.World);
-			}
 		}
+
+//		if (PhotonNetwork.isMasterClient) 
+//		{
+//			if (target == null) 
+//			{
+//				float distance = (serverCurrentClick - transform.position).magnitude;
+//				if (serverCurrentClick != Vector3.zero && distance > 1) 
+//				{
+//					movement = serverCurrentClick;
+//				}
+//				else 
+//				{
+//					movement = transform.position;
+//				}
+//			} 
+//			else 
+//			{
+//				transform.LookAt (target.transform.position);
+//				float distance = (transform.position - target.transform.position).magnitude;
+//				if (distance < forgerInfo.AttackRange) 
+//				{
+//					movement = transform.position;
+//					clicked = false;
+//					Attack();
+//				} 
+//				else 
+//				{
+//					movement = target.transform.position;
+//				}
+//			}
+//		}
+//
+//		nav.destination = movement;
 	}
 
 	void Attack()
 	{
 		if(Time.time >= forgerInfo.NextAttackTime)
 		{
-			Debug.Log("Hero Attacks with " + forgerInfo.Attack + " attack!");
+			Debug.Log("Hero Attacks!");
 			AttackAnimation();
-			uMovement.Target.TakeDamage(forgerInfo);
+			target.TakeDamage(forgerInfo.Attack);
 			forgerInfo.NextAttackTime = Time.time + forgerInfo.AttackSpeed;
 		}
 	}
@@ -145,22 +119,21 @@ public class HeroController : Photon.MonoBehaviour
 		
 	}
 
-	private GameObject ClickedCollider( Vector3 hit )
+	private int ClickedCollider( Vector3 hit )
 	{
-		LayerMask mask = 1 << 8;
-		Collider[] hitColliders = Physics.OverlapSphere(hit, 0.5f, mask); 
+		Collider[] hitColliders = Physics.OverlapSphere(hit, 0.5f); 
 		return FindClosestCollider(hitColliders, hit);
 	}
 	
-	private GameObject FindClosestCollider( Collider[] list, Vector3 pos )
+	private int FindClosestCollider( Collider[] list, Vector3 pos )
 	{
-		float minDist = 500000f; GameObject output = gameObject;
+		float minDist = 500000f; int output = gameObject.GetPhotonView().viewID;
 		foreach(Collider c in list)
 		{
 			float dist = Vector3.Distance(c.transform.position, pos);
 			if(dist < minDist && c.tag != "Terrain" )
 			{
-				output = c.gameObject;
+				output = c.gameObject.GetPhotonView().viewID;
 				minDist = dist;
 			}
 		}
@@ -193,6 +166,31 @@ public class HeroController : Photon.MonoBehaviour
 //		movement = new Vector3( x, y, z );
 //	}
 
+	void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		SerializeState( stream, info );
+	}
+
+	public void SerializeState(PhotonStream stream, PhotonMessageInfo info)
+	{
+		if (stream.isWriting) {
+			serializeCheck = "I am Writing!";
+			Vector3 pos = transform.position;
+			float rot = transform.eulerAngles.y;
+			Vector3 vel = movement;
+			stream.SendNext(pos);
+			stream.SendNext(rot);
+			stream.SendNext(vel);
+		} else {
+			serializeCheck = "I am Reading!";
+			transform.position = posReceived = (Vector3)stream.ReceiveNext();
+			Vector3 rota = transform.eulerAngles;
+			rota.y = rotReceived = (float)stream.ReceiveNext();
+			transform.eulerAngles = rota;
+			movement = velReceived = (Vector3)stream.ReceiveNext();
+		}
+	}
+
 	void OnGUI ()
 	{
 		Vector2 backgroundBarSize = new Vector2 (Screen.width * 0.2f, Screen.height * 0.06f);
@@ -219,44 +217,22 @@ public class HeroController : Photon.MonoBehaviour
 
 		if(photonView.isMine)
 		{
-			GUI.Label (new Rect (Screen.width - 100, 20, 300, 30), "Ping: " + PhotonNetwork.GetPing());
-			GUI.Label (new Rect (10, 20, 300, 30), "CurrentState: " + uMovement.CurrentState.ToString());
-			if(uMovement.Target != null)
-				GUI.Label (new Rect (10, 30, 300, 30), "Target: " + uMovement.Target.UnitName);
-			GUI.Label (new Rect (10, 10, 300, 30), "Movement: " + uMovement.Movement.ToString());
+			//GUI.Label (new Rect (10, 20, 300, 30), "CurrentState: " + msControl.CurrentState.ToString());
+			if(target != null)
+				//GUI.Label (new Rect (10, 30, 300, 30), "Target: " + target.Name.ToString());
+			GUI.Label (new Rect (10, 10, 300, 30), "Movement: " + movement.ToString());
 
 			GUI.Label(new Rect (viewPos.x - 25, posYHealthBar-40, 200, 25), serializeCheck);
 			GUI.Label (new Rect (viewPos.x - 50, posYHealthBar-30, 200, 25), "Stream Pos: " + posReceived.ToString());
 			GUI.Label (new Rect (viewPos.x - 25, posYHealthBar-20, 200, 25), "Stream Rot: " + rotReceived);
+			GUI.Label (new Rect (viewPos.x - 50, posYHealthBar-10, 200, 25), "Stream Vel: " + velReceived.ToString());
 		}
 		else
 		{
 			GUI.Label(new Rect (viewPos.x - 25, posYHealthBar-40, 200, 25), serializeCheck);
 			GUI.Label (new Rect (viewPos.x - 50, posYHealthBar-30, 200, 25), "Stream Pos: " + posReceived.ToString());
 			GUI.Label (new Rect (viewPos.x - 25, posYHealthBar-20, 200, 25), "Stream Rot: " + rotReceived);
-		}
-	}
-
-	void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-	{
-		SerializeState( stream, info );
-		uMovement.SerializeState( stream, info );
-	}
-	
-	public void SerializeState(PhotonStream stream, PhotonMessageInfo info)
-	{
-		if (stream.isWriting) {
-			serializeCheck = "I am Writing!";
-			Vector3 pos = transform.position;
-			float rot = transform.eulerAngles.y;
-			stream.SendNext(pos);
-			stream.SendNext(rot);
-		} else {
-			serializeCheck = "I am Reading!";
-			transform.position = posReceived = (Vector3)stream.ReceiveNext();
-			Vector3 rota = transform.eulerAngles;
-			rota.y = rotReceived = (float)stream.ReceiveNext();
-			transform.eulerAngles = rota;
+			GUI.Label (new Rect (viewPos.x - 50, posYHealthBar-10, 200, 25), "Stream Vel: " + velReceived.ToString());
 		}
 	}
 }
